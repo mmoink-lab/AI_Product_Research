@@ -1,30 +1,27 @@
-import pandas as pd
+from pathlib import Path
 
 from database.importer import ProductImporter
 
-data = {
-    "Product": [
-        "USB Mini Blender",
-        "Vegetable Chopper"
-    ],
-    "Price": [
-        1200,
-        850
-    ],
-    "Category": [
-        "Kitchen",
-        "Kitchen"
-    ],
-    "Image": [
-        "img1.jpg",
-        "img2.jpg"
-    ]
-}
-
-df = pd.DataFrame(data)
+csv_file = Path("data/input/646.csv")
 
 importer = ProductImporter()
 
-importer.import_products(df)
+total = importer.import_csv(csv_file)
 
-print("Import Successful")
+print("=" * 80)
+
+print("Imported :", total)
+
+print()
+
+products = importer.get_products()
+
+print(products[:5])
+
+print()
+
+print("Database Total :", len(products))
+
+print("=" * 80)
+
+importer.close()

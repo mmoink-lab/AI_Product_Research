@@ -1,45 +1,35 @@
-import sqlite3
-import pandas as pd
+"""
+Database Importer
+Production v1
+"""
+
+from database.repository import ProductRepository
+from research.collector import ProductCollector
 
 
 class ProductImporter:
-    """
-    Import products into SQLite database.
-    """
 
-    def __init__(self, db_path="database/database.db"):
-        self.db_path = db_path
+    def __init__(self):
 
-    def import_products(self, df: pd.DataFrame):
+        self.collector = ProductCollector()
+        self.repository = ProductRepository()
 
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
+    def import_csv(self, csv_file):
 
-        records = []
+        products = self.collector.load(csv_file)
 
-        for _, row in df.iterrows():
+        self.repository.clear()
 
-            records.append((
-                row.get("Product", ""),
-                row.get("Price", None),
-                row.get("Category", ""),
-                row.get("Image", ""),
-                ""
-            ))
+        self.repository.insert_many(products)
 
-        cursor.executemany("""
-        INSERT INTO products
-        (
-            product_name,
-            price,
-            category,
-            image,
-            family
-        )
-        VALUES (?, ?, ?, ?, ?)
-        """, records)
+        total = self.repository.total_products()
 
-        conn.commit()
-        conn.close()
+        return total
 
-        return len(records)
+    def get_products(self):
+
+        return self.repository.get_all()
+
+    def close(self):
+
+        self.repository.close()

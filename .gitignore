@@ -63,3 +63,4 @@ exports/*.xlsx
 # -----------------------------
 *.tmp
 *.bak
+data/output/
